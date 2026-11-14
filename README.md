@@ -27,6 +27,20 @@ Built with **Python, LangChain, Google Gemini, ChromaDB and FastAPI**.
 
 ---
 
+## 📸 Results
+
+**1. Question answered from the PDF** – *"What is my Payroll Changes?"*
+The answer comes only from the document's content, with source pages returned.
+
+![Answer from PDF](screenshots/answer-from-pdf.png)
+
+**2. Question not covered by the PDF** – *"Who won the IPL?"*
+The bot says **"I don't know"** instead of making something up. This is the hallucination guard working.
+
+![I don't know](screenshots/i-dont-know.png)
+
+---
+
 ## 🔧 Problems I hit and how I solved them
 
 | Problem | What happened | Fix |
@@ -35,6 +49,7 @@ Built with **Python, LangChain, Google Gemini, ChromaDB and FastAPI**.
 | **Rate limit** | Gemini free tier allows 100 embedding requests per minute, and the PDF had more chunks than that | Batched ingestion: 90 chunks at a time with a 61-second pause between batches. I also raised the chunk size to 1000 to reduce the chunk count (64 chunks). |
 | **Hallucination** | LLMs can confidently make things up | Context-only prompt with an "I don't know" fallback, temperature 0, and source pages returned for verification. |
 | **Slow or hanging requests** | API retries made `/ask` hang | Added `timeout=30` and `max_retries=1` so it fails fast. |
+| **Messy answer format** | Newer Gemini models return `content` as a list of parts with a `signature` field instead of plain text | Extracted only the `text` parts so the API returns a clean answer string. |
 | **Wrong Python interpreter** | `ModuleNotFoundError` even though packages were installed | PowerShell was using the global Python. Running `.\venv\Scripts\python.exe` used the venv. |
 
 ---
